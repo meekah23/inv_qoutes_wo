@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>inv_printer</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget{
@@ -23,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>10</y>
+     <y>0</y>
      <width>1061</width>
      <height>781</height>
     </rect>
@@ -34,9 +34,9 @@
       <colorrole role="WindowText">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>0</green>
-         <blue>0</blue>
+         <red>170</red>
+         <green>255</green>
+         <blue>127</blue>
         </color>
        </brush>
       </colorrole>
@@ -88,9 +88,9 @@
       <colorrole role="Text">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>0</green>
-         <blue>0</blue>
+         <red>170</red>
+         <green>255</green>
+         <blue>127</blue>
         </color>
        </brush>
       </colorrole>
@@ -106,9 +106,9 @@
       <colorrole role="ButtonText">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>0</green>
-         <blue>0</blue>
+         <red>170</red>
+         <green>255</green>
+         <blue>127</blue>
         </color>
        </brush>
       </colorrole>
@@ -171,9 +171,9 @@
       <colorrole role="WindowText">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>0</green>
-         <blue>0</blue>
+         <red>170</red>
+         <green>255</green>
+         <blue>127</blue>
         </color>
        </brush>
       </colorrole>
@@ -225,9 +225,9 @@
       <colorrole role="Text">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>0</green>
-         <blue>0</blue>
+         <red>170</red>
+         <green>255</green>
+         <blue>127</blue>
         </color>
        </brush>
       </colorrole>
@@ -243,9 +243,9 @@
       <colorrole role="ButtonText">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>0</green>
-         <blue>0</blue>
+         <red>170</red>
+         <green>255</green>
+         <blue>127</blue>
         </color>
        </brush>
       </colorrole>
@@ -308,8 +308,8 @@
       <colorrole role="WindowText">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>127</green>
+         <red>170</red>
+         <green>255</green>
          <blue>127</blue>
         </color>
        </brush>
@@ -362,8 +362,8 @@
       <colorrole role="Text">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>127</green>
+         <red>170</red>
+         <green>255</green>
          <blue>127</blue>
         </color>
        </brush>
@@ -380,8 +380,8 @@
       <colorrole role="ButtonText">
        <brush brushstyle="SolidPattern">
         <color alpha="255">
-         <red>0</red>
-         <green>127</green>
+         <red>170</red>
+         <green>255</green>
          <blue>127</blue>
         </color>
        </brush>
@@ -445,24 +445,25 @@
    </property>
    <property name="font">
     <font>
-     <family>Monotype Corsiva</family>
+     <family>Segoe UI</family>
      <pointsize>10</pointsize>
      <weight>50</weight>
-     <italic>true</italic>
+     <italic>false</italic>
      <bold>false</bold>
     </font>
    </property>
    <property name="styleSheet">
     <string notr="true">QTabWidget{
 background-color: rgb(255, 255, 127);
-	font: italic 10pt &quot;Monotype Corsiva&quot;;
+	font: 10pt &quot;Segoe UI&quot;;
+	color: rgb(170, 255, 127);
 
 }
 
 </string>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab_inv">
     <property name="font">
@@ -483,10 +484,10 @@ background-color: rgb(255, 255, 127);
     <widget class="QTableWidget" name="tableWidget_inv">
      <property name="geometry">
       <rect>
-       <x>230</x>
-       <y>70</y>
+       <x>280</x>
+       <y>60</y>
        <width>721</width>
-       <height>581</height>
+       <height>571</height>
       </rect>
      </property>
      <property name="focusPolicy">
@@ -543,32 +544,11 @@ background-color: rgb(255, 255, 255);
       </property>
      </column>
     </widget>
-    <widget class="QPushButton" name="scan_inv">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>120</y>
-       <width>91</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-background-color: rgb(0, 255, 0);
-	color: rgb(255, 255, 255);
-	font: 63 10pt &quot;Segoe UI Semibold&quot;;
-border-radius: 15px;
-}</string>
-     </property>
-     <property name="text">
-      <string>Scan</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pdfbtn_inv">
      <property name="geometry">
       <rect>
-       <x>920</x>
-       <y>690</y>
+       <x>900</x>
+       <y>660</y>
        <width>101</width>
        <height>41</height>
       </rect>
@@ -588,37 +568,113 @@ background-color: rgb(170, 0, 0);
       <string>Create PDF</string>
      </property>
     </widget>
+    <widget class="QFrame" name="frame_3">
+     <property name="geometry">
+      <rect>
+       <x>-60</x>
+       <y>-50</y>
+       <width>291</width>
+       <height>841</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QFrame{
+background-color: rgb(91, 124, 253);
+border-radius: 100px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>200</y>
+        <width>191</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	
+	
+	font: 25 9pt &quot;Microsoft YaHei Light&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Click scan 
+ and print 
+invoices to pdf</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="scan_inv">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>110</y>
+        <width>121</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+background-color: #3FE8C4;
+	color: rgb(255, 255, 255);
+	font: 63 15pt &quot;Segoe UI Semibold&quot;;
+border-radius: 15px;
+}</string>
+      </property>
+      <property name="text">
+       <string>Scan</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>570</y>
+        <width>161</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	font: 87 12pt &quot;Arial Black&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Invoice 
+ 
+to
+ 
+PDF</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_q">
     <attribute name="title">
      <string>Quotes</string>
     </attribute>
-    <widget class="QPushButton" name="scan_q">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>100</y>
-       <width>91</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-background-color: rgb(0, 255, 0);
-	color: rgb(255, 255, 255);
-	font: 63 10pt &quot;Segoe UI Semibold&quot;;
-border-radius: 15px;
-}</string>
-     </property>
-     <property name="text">
-      <string>Scan</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pdfbtn_q">
      <property name="geometry">
       <rect>
-       <x>930</x>
-       <y>690</y>
+       <x>900</x>
+       <y>660</y>
        <width>101</width>
        <height>41</height>
       </rect>
@@ -641,9 +697,9 @@ background-color: rgb(170, 0, 0);
     <widget class="QTableWidget" name="tableWidget_q">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>70</y>
-       <width>751</width>
+       <x>280</x>
+       <y>60</y>
+       <width>721</width>
        <height>571</height>
       </rect>
      </property>
@@ -697,9 +753,106 @@ background-color: rgb(255, 255, 255);
      </column>
      <column>
       <property name="text">
-       <string>Invoice #</string>
+       <string>Quote#</string>
       </property>
      </column>
+    </widget>
+    <widget class="QFrame" name="frame_2">
+     <property name="geometry">
+      <rect>
+       <x>-60</x>
+       <y>-50</y>
+       <width>291</width>
+       <height>841</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QFrame{
+background-color:#38CDE8;
+border-radius: 100px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>200</y>
+        <width>191</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	
+	
+	font: 25 9pt &quot;Microsoft YaHei Light&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Click scan 
+ and print 
+quotes to pdf</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="scan_q">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>110</y>
+        <width>121</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+background-color:#45FFA3;
+	color: rgb(255, 255, 255);
+	font: 63 15pt &quot;Segoe UI Semibold&quot;;
+border-radius: 15px;
+}</string>
+      </property>
+      <property name="text">
+       <string>Scan</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>570</y>
+        <width>161</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	font: 87 12pt &quot;Arial Black&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Quotes 
+ 
+to
+ 
+PDF</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_wo">
@@ -709,9 +862,9 @@ background-color: rgb(255, 255, 255);
     <widget class="QTableWidget" name="tableWidget_wo">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>70</y>
-       <width>751</width>
+       <x>280</x>
+       <y>60</y>
+       <width>721</width>
        <height>571</height>
       </rect>
      </property>
@@ -765,36 +918,15 @@ background-color: rgb(255, 255, 255);
      </column>
      <column>
       <property name="text">
-       <string>Invoice #</string>
+       <string>W/O#</string>
       </property>
      </column>
-    </widget>
-    <widget class="QPushButton" name="scan_wo">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>120</y>
-       <width>91</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-background-color: rgb(0, 255, 0);
-	color: rgb(255, 255, 255);
-	font: 63 10pt &quot;Segoe UI Semibold&quot;;
-border-radius: 15px;
-}</string>
-     </property>
-     <property name="text">
-      <string>Scan</string>
-     </property>
     </widget>
     <widget class="QPushButton" name="pdfbtn_wo">
      <property name="geometry">
       <rect>
        <x>900</x>
-       <y>680</y>
+       <y>660</y>
        <width>101</width>
        <height>41</height>
       </rect>
@@ -814,11 +946,297 @@ background-color: rgb(170, 0, 0);
       <string>Create PDF</string>
      </property>
     </widget>
+    <widget class="QFrame" name="frame_4">
+     <property name="geometry">
+      <rect>
+       <x>-60</x>
+       <y>-50</y>
+       <width>291</width>
+       <height>841</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QFrame{
+background-color: #5AE896;
+border-radius: 100px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>200</y>
+        <width>191</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	
+	
+	font: 25 9pt &quot;Microsoft YaHei Light&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Click scan 
+ and print 
+work orders to pdf</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="scan_wo">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>110</y>
+        <width>121</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+background-color: #6FFED3;
+	color: rgb(255, 255, 255);
+	font: 63 15pt &quot;Segoe UI Semibold&quot;;
+border-radius: 15px;
+}</string>
+      </property>
+      <property name="text">
+       <string>Scan</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>570</y>
+        <width>161</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	font: 87 12pt &quot;Arial Black&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>Work Order 
+ 
+to
+ 
+PDF</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_h">
     <attribute name="title">
      <string>History</string>
     </attribute>
+    <widget class="QFrame" name="frame_5">
+     <property name="geometry">
+      <rect>
+       <x>-30</x>
+       <y>-30</y>
+       <width>261</width>
+       <height>841</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QFrame{
+background-color: #FE8D4E;
+border-radius: 100px;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>160</y>
+        <width>191</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	
+	
+	font: 25 9pt &quot;Microsoft YaHei Light&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>List of 
+printed invoice,
+quotes and 
+work orders</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>480</y>
+        <width>161</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	font: 87 15pt &quot;Arial Black&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>History</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>380</y>
+        <width>191</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{
+	
+	
+	font: 25 9pt &quot;Microsoft YaHei Light&quot;;
+	color: rgb(255, 255, 255);
+
+}</string>
+      </property>
+      <property name="text">
+       <string>You can 
+reprint selected 
+invoice, quotes 
+and work 
+orders</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QTableWidget" name="tableWidget_his">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>60</y>
+       <width>761</width>
+       <height>571</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::WheelFocus</enum>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::PreventContextMenu</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QTableWidget{
+background-color: rgb(255, 255, 255);
+}</string>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>false</bool>
+     </property>
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
+     <attribute name="horizontalHeaderHighlightSections">
+      <bool>true</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Inv#</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Quote#</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>W/O#</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Customer Name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Date Printed</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Action</string>
+      </property>
+     </column>
+    </widget>
+    <widget class="QPushButton" name="refresh_btn">
+     <property name="geometry">
+      <rect>
+       <x>910</x>
+       <y>660</y>
+       <width>101</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+background-color: #47A874;
+	font: 9pt &quot;Segoe UI Semilight&quot;;
+	
+	color: rgb(255, 255, 255);
+}</string>
+     </property>
+     <property name="text">
+      <string>Refresh</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QLabel" name="time_label">

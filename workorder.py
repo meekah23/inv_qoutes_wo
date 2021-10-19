@@ -3,9 +3,7 @@ import os
 import pandas as pd
 import sqlite3
 import time
-import qoutes as qou
-import workorder as work
-import history as h
+
 from itertools import groupby
 from collections import defaultdict
 from PyQt5.QtWidgets import *
@@ -19,68 +17,33 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 
 
-pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-pdfmetrics.registerFont(TTFont('ArialBd', 'ArialBd.ttf'))
-
-
-
-
-
-class VanInvoice(QWidget):
-    def __init__(self):
-        super(VanInvoice, self).__init__()
-        uic.loadUi("UI/new.ui",self)
-        self.show()
-        h.displayHistory(self)
-        self.scan_inv.clicked.connect(self.getData)
-        self.pdfbtn_inv.clicked.connect(self.toPDF)
-        self.scan_q.clicked.connect(self.getQData)
-        self.pdfbtn_q.clicked.connect(self.toQPDF)
-        self.scan_wo.clicked.connect(self.getWData)
-        self.pdfbtn_wo.clicked.connect(self.toWPDF)
-        
-        
-    def hist(self):
-        h.displayHistory(self)
-    #quote functions
-    def getQData(self):
-        qou.getData(self)
-    def toQPDF(self):
-        qou.toPDF(self)
-    #workorder functions
-    def getWData(self):
-        work.getData(self)
-    def toWPDF(self):
-        work.toPDF(self)
-
-
-    #invoice functions
-    def getData(self):
+def getData(self):
         try:
             start_time = time.time()
-            global table, headers,result,right,amt,gst,total,date, saleman,addedby,invnum,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode
+            global table, headers,result,right,amt,gst,total,date, saleman,addedby,wonum,datereq,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode
             conn = sqlite3.connect(':memory:')
             cur = conn.cursor()
 
             # load excel file
-            df = pd.read_excel("Data1/pri_hd.xlsx", sheet_name="pri_hd")
+            df = pd.read_excel("Data1/prw_hd.xlsx", sheet_name="prw_hd")
             
-            df.to_sql(name='pri_hd', con=conn, if_exists='append')
-            df1 = pd.read_excel("Data1/pri_det.xlsx", sheet_name="pri_det")
-            df1.to_sql(name='pri_det', con=conn, if_exists='append')
+            df.to_sql(name='prw_hd', con=conn, if_exists='append')
+            df1 = pd.read_excel("Data1/prw_det.xlsx", sheet_name="prw_det")
+            df1.to_sql(name='prw_det', con=conn, if_exists='append')
 
             #get headers
-            cur.execute("SELECT OIDATE,OSLSMAN,ADDEDBY,OINO,OQNO FROM pri_hd WHERE PR_STATUS is null")
+            cur.execute("SELECT OWDATE,OSLSMAN,ADDEDBY,OWNO,ORDATE FROM prw_hd WHERE PR_STATUS is null")
             result = cur.fetchall()
             date = [a[0] for a in result] 
             saleman = [a[1] for a in result]
             addedby = [a[2] for a in result]
-            invnum = [a[3] for a in result]
-            quote = [a[4] for a in result] 
+            wonum = [a[3] for a in result]
+            datereq = [a[4] for a in result] 
+            
             
             
             #get ship details
-            cur.execute("SELECT ONAME || ', ' || OFNAME,OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM pri_hd WHERE  PR_STATUS is null")
+            cur.execute("SELECT ONAME || ', ' || OFNAME,OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM prw_hd WHERE  PR_STATUS is null")
             shipping = cur.fetchall()
             name = [a[0] for a in shipping]
             sadd1 = [a[1] for a in shipping]
@@ -108,10 +71,11 @@ class VanInvoice(QWidget):
                         "CASE WHEN round(OD_QTY,2) = 0 AND round(OD_PRICE,2) = 0 AND round(OD_AMOUNT,2) = 0 THEN '' "
                         "ELSE round(OD_AMOUNT,2) "
                         "END, "
-                        "pri_hd.OINO "                       
-                        "FROM pri_det "
-                        "INNER JOIN pri_hd ON pri_det.OD_UNO = pri_hd.ONUMBER "
-                        "WHERE pri_hd.PR_STATUS is null")
+                        "prw_hd.OWNO "
+                        #"sum(round(OD_AMOUNT,2)), sum(round(prw_hd.OGST,2)), sum(round(OD_AMOUNT,2))+ sum(round(prw_hd.OGST,2))"
+                       "FROM prw_det "
+                        "INNER JOIN prw_hd ON prw_det.OD_UNO = prw_hd.ONUMBER "
+                        "WHERE prw_hd.PR_STATUS is null")
             table = cur.fetchall()
             b = [el[5] for el in table]
             newlist = list(dict.fromkeys(b))            
@@ -119,7 +83,7 @@ class VanInvoice(QWidget):
 
             #get total
             for c in newlist:                
-                cur.execute("SELECT SUM(round(OD_AMOUNT,2)),OGST,SUM(round(OD_AMOUNT,2))+OGST FROM pri_det INNER JOIN pri_hd ON pri_det.OD_UNO = pri_hd.ONUMBER WHERE OINO = ?",(c,))
+                cur.execute("SELECT SUM(round(OD_AMOUNT,2)),OGST,SUM(round(OD_AMOUNT,2))+OGST FROM prw_det INNER JOIN prw_hd ON prw_det.OD_UNO = prw_hd.ONUMBER WHERE OWNO = ?",(c,))
                 d = cur.fetchall()               
                 finalist.append(d)
             
@@ -127,34 +91,33 @@ class VanInvoice(QWidget):
             gst=[a[0][1] for a in finalist]
             total = [a[0][2] for a in finalist]
 
-            self.tableWidget_inv.setRowCount(0)
+            self.tableWidget_wo.setRowCount(0)
             for row_number, row_data in enumerate(table):
-                self.tableWidget_inv.insertRow(row_number)
+                self.tableWidget_wo.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
-                    self.tableWidget_inv.setItem(row_number, column_number, QTableWidgetItem(str(data)))
+                    self.tableWidget_wo.setItem(row_number, column_number, QTableWidgetItem(str(data)))
             
             if not table:
                 QMessageBox.information(self, "Done!", "No more invoice to print.")
             else:
                 end_time = time.time()
                 execution_time = end_time - start_time
-                self.time_label.setText("Data fetched for " + str(execution_time) + " secs")
+                self.time_label.setText("Data1 fetched for " + str(execution_time) + " secs")
 
         except Exception as e:
                 print(e)
                 QMessageBox.information(self,"Error", "Failed to run script.")
 
-    def toPDF(self):
+def toPDF(self):
         start_time = time.time()
         directory = "inv_pdf"
         all_data = [[x for x in g] for x, g in groupby(table, key = lambda x: x[5])]
         
-        filename = time.time()
         try:
             os.makedirs(directory, exist_ok = True)
             print("Directory '%s' created successfully" % directory)
             #selecting simultaneous lists using zip()
-            for data, sumamt, ogst, ototal, odate, osale, oadd, oinv, oquo, oname, osadd1, osadd2, osadd3, oscode, osphone, ospstno, olstr, olname, oladd1, oladd2, oladd3, olcode in zip(all_data, amt, gst, total, date, saleman,addedby,invnum,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode):
+            for data, sumamt, ogst, ototal, odate, osale, oadd, owonum, ordate, oname, osadd1, osadd2, osadd3, oscode, osphone, ospstno, olstr, olname, oladd1, oladd2, oladd3, olcode in zip(all_data, amt, gst, total, date, saleman,addedby,wonum,datereq,name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode):
 
                 style2 = ParagraphStyle(
                     name='Normal',
@@ -169,6 +132,7 @@ class VanInvoice(QWidget):
                     fontSize=12,
                     alignment=1,
                     spaceBefore=20,
+
                 )
 
                 addstyle = ParagraphStyle(
@@ -176,6 +140,7 @@ class VanInvoice(QWidget):
                     fontName='ArialBd',
                     fontSize=10,
                     alignment=1,
+                                      
                 )
 
                 tablestyle1 = TableStyle([
@@ -183,6 +148,12 @@ class VanInvoice(QWidget):
                     ('FONTNAME', (0, 0), (-1, -1), 'ArialBd'),
                     #('BOX', (0, 0), (-1, -1), 0.5, colors.black),
 
+                 ])
+                style4 = TableStyle([
+                    ('FONTSIZE', (0, 0), (-1, -1), 12),
+                    ('FONTNAME', (0, 0), (-1, -1), 'Arial'),
+                    ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
+                    ('ALIGN',(0,0),(-1,-1), 'CENTER'),
                  ])
 
                 tablestyle2 = TableStyle([
@@ -223,10 +194,15 @@ class VanInvoice(QWidget):
                      heading.wrap(pdf.width, inch * 0.3)
                      heading.drawOn(canvas, pdf.leftMargin, pdf.height + inch)
 
-                        # Draw subheading.
-                     subheading = Paragraph("INVOICE", style3)
+                     
+                     subheading = Paragraph("WORK ORDER", style3)
                      subheading.wrap(pdf.width, inch * 0.2)
                      subheading.drawOn(canvas, pdf.leftMargin, pdf.height + inch * 0.5)
+
+                     addressnote = Paragraph("1706 E. HASTINGS, VAN, B.C. V5L 1S9 Phone (604)253-7707 Fax (604)253-8448",addstyle)
+                     addressnote.wrap(pdf.width, inch)
+                     addressnote.drawOn(canvas, pdf.leftMargin, 0.7 * inch)
+                     
                     
                         #table line
                      canvas.line(1.7 * inch, 2.5 *inch, 1.7 *inch, 7.6 *inch)
@@ -234,9 +210,11 @@ class VanInvoice(QWidget):
                      canvas.line(6.41 * inch, 2.5 * inch, 6.41 * inch, 7.6 * inch)
                      canvas.line(7.19 * inch, 2.5 * inch, 7.19 * inch, 7.6 * inch)
 
-                     tablelist1 = [["Date: "+str(odate),"Invoice#: "+str(oinv)],
-                                  ["Salesman: "+str(osale)],
-                                  ["GST#: 121989834RT","Quote#: "+str(oquo)],
+                     
+
+                     tablelist1 = [["Date: "+str(odate),"W/O#: "+str(owonum)],
+                                  ["Salesman: "+str(osale), "Date Req: "+str(ordate)],
+                                  ["GST#: 121989834RT"],
                                   ["Added-by: "+str(oadd),"Page: "+"%d " % doc.page]
                                   ] 
                
@@ -253,11 +231,11 @@ class VanInvoice(QWidget):
 
                      
                      footerlist = [["", "Sub-Total:", sumamt],
-                                 ["Overdue accounts will be charged 2% per month.", "GST", ogst],
-                                 ["Please enclose a copy of the invoice with the cheque."],
+                                 ["", "GST", ogst],
                                  [""],
                                  [""],
-                                 ["Charge to Acount", "Total Amount:", round(ototal,2)]]
+                                 [""],
+                                 ["", "Total Amount:", round(ototal,2)]]
 
                      table1 = Table(tablelist1, colWidths=[400,200], rowHeights=[10, 10, 10, 10],
                                    hAlign='CENTER', spaceBefore=5, style=tablestyle1)
@@ -279,15 +257,13 @@ class VanInvoice(QWidget):
                      footertable.drawOn(canvas, pdf.leftMargin, 1.38 * inch)
 
 
-                     addressnote = Paragraph("1706 E. HASTINGS, VAN, B.C. V5L 1S9 Phone (604)253-7707 Fax (604)253-8448",addstyle)
-                     addressnote.wrap(pdf.width, inch)
-                     addressnote.drawOn(canvas, pdf.leftMargin, 0.7 * inch)
+                     
                         
 
-                save_name = os.path.join("inv_pdf/", "i"+ str(oinv)+'.pdf')           
+                save_name = os.path.join("inv_pdf/", "w"+ str(owonum)+'.pdf')           
                 doc = BaseDocTemplate(save_name, leftMargin=0.5 * inch, rightMargin=0.5 * inch)
                 
-                filename+=1
+                
                 frame = Frame(
 
                     0.5 * inch,  # x
@@ -317,15 +293,15 @@ class VanInvoice(QWidget):
                 Elements.append(table3)
                 
                 doc.build(Elements)
-             
+              
             try:               
-               df = pd.read_excel("Data1/pri_hd.xlsx", sheet_name="pri_hd")               
+               df = pd.read_excel("Data1/prw_hd.xlsx", sheet_name="prw_hd")               
                df.loc[(df.PR_STATUS.isnull()), 'PR_STATUS'] = 'P'
-               df.to_excel('Data1/pri_hd.xlsx',sheet_name = 'pri_hd', index=False)
+               df.to_excel('Data1/prw_hd.xlsx',sheet_name = 'prw_hd', index=False)
                print('Status updated')                
             except Exception as e:
                 print(e)
-            
+             
 
             end_time = time.time()
             execution_time = end_time - start_time
@@ -334,10 +310,4 @@ class VanInvoice(QWidget):
             print(e)
             QMessageBox.information(self, "Error", "Failed to run script.")
         
-       
 
-app = QApplication(sys.argv)
-design = VanInvoice()
-
-
-app.exec_()

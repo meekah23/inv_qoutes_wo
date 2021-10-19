@@ -20,29 +20,30 @@ from reportlab.pdfbase.ttfonts import TTFont
 def getData(self):
         try:
             start_time = time.time()
-            global table, headers,result,right,amt,gst,total,date, saleman,addedby,invnum,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode
+            global table, headers,result,right,amt,gst,total,date, saleman,addedby,invnum,quote, po, datereq, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode
             conn = sqlite3.connect(':memory:')
             cur = conn.cursor()
 
             # load excel file
-            df = pd.read_excel("Data/PR_HEAD.xlsx", sheet_name="PR_HEAD")
+            df = pd.read_excel("Data1/prq_hd.xlsx", sheet_name="prq_hd")
             
-            df.to_sql(name='PR_HEAD', con=conn, if_exists='append')
-            df1 = pd.read_excel("Data/PR_DETL.xlsx", sheet_name="PR_DETL")
-            df1.to_sql(name='PR_DETL', con=conn, if_exists='append')
+            df.to_sql(name='prq_hd', con=conn, if_exists='append')
+            df1 = pd.read_excel("Data1/prq_det.xlsx", sheet_name="prq_det")
+            df1.to_sql(name='prq_det', con=conn, if_exists='append')
 
             #get headers
-            cur.execute("SELECT OIDATE,OSLSMAN,ADDEDBY,OINO,OQNO FROM PR_HEAD WHERE PR_STATUS is null")
+            cur.execute("SELECT OQDATE,OSLSMAN,ADDEDBY,OQNO, OPONO, ORDATE FROM prq_hd WHERE PR_STATUS is null")
             result = cur.fetchall()
             date = [a[0] for a in result] 
             saleman = [a[1] for a in result]
-            addedby = [a[2] for a in result]
-            invnum = [a[3] for a in result]
-            quote = [a[4] for a in result] 
+            addedby = [a[2] for a in result]            
+            quote = [a[3] for a in result]
+            po = [a[4] for a in result]
+            datereq = [a[5] for a in result] 
             
             
             #get ship details
-            cur.execute("SELECT ONAME || ', ' || OFNAME,OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM PR_HEAD WHERE  PR_STATUS is null")
+            cur.execute("SELECT ONAME || ', ' || OFNAME,OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM prq_hd WHERE  PR_STATUS is null")
             shipping = cur.fetchall()
             name = [a[0] for a in shipping]
             sadd1 = [a[1] for a in shipping]
@@ -70,11 +71,11 @@ def getData(self):
                         "CASE WHEN round(OD_QTY,2) = 0 AND round(OD_PRICE,2) = 0 AND round(OD_AMOUNT,2) = 0 THEN '' "
                         "ELSE round(OD_AMOUNT,2) "
                         "END, "
-                        "PR_HEAD.OINO "
-                        #"sum(round(OD_AMOUNT,2)), sum(round(PR_HEAD.OGST,2)), sum(round(OD_AMOUNT,2))+ sum(round(PR_HEAD.OGST,2))"
-                       "FROM PR_DETL "
-                        "INNER JOIN PR_HEAD ON PR_DETL.OD_UNO = PR_HEAD.ONUMBER "
-                        "WHERE PR_HEAD.PR_STATUS is null")
+                        "prq_hd.OQNO "
+                        #"sum(round(OD_AMOUNT,2)), sum(round(prq_hd.OGST,2)), sum(round(OD_AMOUNT,2))+ sum(round(prq_hd.OGST,2))"
+                       "FROM prq_det "
+                        "INNER JOIN prq_hd ON prq_det.OD_UNO = prq_hd.ONUMBER "
+                        "WHERE prq_hd.PR_STATUS is null")
             table = cur.fetchall()
             b = [el[5] for el in table]
             newlist = list(dict.fromkeys(b))            
@@ -82,7 +83,7 @@ def getData(self):
 
             #get total
             for c in newlist:                
-                cur.execute("SELECT SUM(round(OD_AMOUNT,2)),OGST,SUM(round(OD_AMOUNT,2))+OGST FROM PR_DETL INNER JOIN PR_HEAD ON PR_DETL.OD_UNO = PR_HEAD.ONUMBER WHERE OINO = ?",(c,))
+                cur.execute("SELECT SUM(round(OD_AMOUNT,2)),OGST,SUM(round(OD_AMOUNT,2))+OGST FROM prq_det INNER JOIN prq_hd ON prq_det.OD_UNO = prq_hd.ONUMBER WHERE OQNO = ?",(c,))
                 d = cur.fetchall()               
                 finalist.append(d)
             
@@ -116,7 +117,7 @@ def toPDF(self):
             os.makedirs(directory, exist_ok = True)
             print("Directory '%s' created successfully" % directory)
             #selecting simultaneous lists using zip()
-            for data, sumamt, ogst, ototal, odate, osale, oadd, oinv, oquo, oname, osadd1, osadd2, osadd3, oscode, osphone, ospstno, olstr, olname, oladd1, oladd2, oladd3, olcode in zip(all_data, amt, gst, total, date, saleman,addedby,invnum,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode):
+            for data, sumamt, ogst, ototal, odate, osale, oadd, oquo, opono,ordate,oname, osadd1, osadd2, osadd3, oscode, osphone, ospstno, olstr, olname, oladd1, oladd2, oladd3, olcode in zip(all_data, amt, gst, total, date, saleman,addedby,quote, po,datereq,name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode):
 
                 style2 = ParagraphStyle(
                     name='Normal',
@@ -214,9 +215,9 @@ def toPDF(self):
 
                      
 
-                     tablelist1 = [["Date: "+str(odate),"Invoice#: "+str(oinv)],
-                                  ["Salesman: "+str(osale)],
-                                  ["GST#: 121989834RT","Quote#: "+str(oquo)],
+                     tablelist1 = [["Date: "+str(odate),"Quote#: "+str(oquo)],
+                                  ["Salesman: "+str(osale),"PO#: "+str(opono)],
+                                  ["GST#: 121989834RT","Date Req: "+str(ordate)],
                                   ["Added-by: "+str(oadd),"Page: "+"%d " % doc.page]
                                   ] 
                
@@ -237,7 +238,7 @@ def toPDF(self):
                                  [""],
                                  [""],
                                  [""],
-                                 ["", "Total Amount:", ototal]]
+                                 ["", "Total Amount:", round(ototal,2)]]
 
                      table1 = Table(tablelist1, colWidths=[400,200], rowHeights=[10, 10, 10, 10],
                                    hAlign='CENTER', spaceBefore=5, style=tablestyle1)
@@ -262,7 +263,7 @@ def toPDF(self):
                      
                         
 
-                save_name = os.path.join("inv_pdf/", "q"+ str(oinv)+'.pdf')           
+                save_name = os.path.join("inv_pdf/", "q"+ str(oquo)+'.pdf')           
                 doc = BaseDocTemplate(save_name, leftMargin=0.5 * inch, rightMargin=0.5 * inch)
                 
                 
@@ -295,15 +296,15 @@ def toPDF(self):
                 Elements.append(table3)
                 
                 doc.build(Elements)
-            """    
+                
             try:               
-               df = pd.read_excel("Data/PR_HEAD.xlsx", sheet_name="PR_HEAD")               
+               df = pd.read_excel("Data1/prq_hd.xlsx", sheet_name="prq_hd")               
                df.loc[(df.PR_STATUS.isnull()), 'PR_STATUS'] = 'P'
-               df.to_excel('Data/PR_HEAD.xlsx',sheet_name = 'PR_HEAD', index=False)
+               df.to_excel('Data1/prq_hd.xlsx',sheet_name = 'prq_hd', index=False)
                print('Status updated')                
             except Exception as e:
                 print(e)
-                """
+                
 
             end_time = time.time()
             execution_time = end_time - start_time
