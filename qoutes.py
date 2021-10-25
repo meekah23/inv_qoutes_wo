@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import sqlite3
 import time
-
+import random
 from itertools import groupby
 from collections import defaultdict
 from PyQt5.QtWidgets import *
@@ -16,22 +16,21 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 
-
 def getData(self):
         try:
             start_time = time.time()
-            global table, headers,result,right,amt,gst,total,date, saleman,addedby,invnum,quote, po, datereq, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode
+            global gstnum,table, headers,result,right,amt,gst,total,date, saleman,addedby,invnum,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode, po, datereq
             conn = sqlite3.connect(':memory:')
             cur = conn.cursor()
 
             # load excel file
-            df = pd.read_excel("Data1/prq_hd.xlsx", sheet_name="prq_hd")
-            
+            df = pd.read_excel("Data1/prq_hd.xlsx", sheet_name="prq_hd")            
             df.to_sql(name='prq_hd', con=conn, if_exists='append')
             df1 = pd.read_excel("Data1/prq_det.xlsx", sheet_name="prq_det")
             df1.to_sql(name='prq_det', con=conn, if_exists='append')
+            df2 = pd.read_excel("Data1/pr_sysky.xlsx", sheet_name="pr_sysky")
+            df2.to_sql(name='pr_sysky', con=conn, if_exists='append')
 
-            #get headers
             cur.execute("SELECT OQDATE,OSLSMAN,ADDEDBY,OQNO, OPONO, ORDATE FROM prq_hd WHERE PR_STATUS is null")
             result = cur.fetchall()
             date = [a[0] for a in result] 
@@ -40,10 +39,14 @@ def getData(self):
             quote = [a[3] for a in result]
             po = [a[4] for a in result]
             datereq = [a[5] for a in result] 
+
+            cur.execute("SELECT SYSVAL FROM pr_sysky WHERE SYSKEY = 'WOLINE4'")
+            g = cur.fetchall()
+            gstnum = [a[0] for a in g] 
             
             
             #get ship details
-            cur.execute("SELECT ONAME || ', ' || OFNAME,OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM prq_hd WHERE  PR_STATUS is null")
+            cur.execute("SELECT ONAME||COALESCE(OFNAME,' '),OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM prq_hd WHERE  PR_STATUS is null")
             shipping = cur.fetchall()
             name = [a[0] for a in shipping]
             sadd1 = [a[1] for a in shipping]
@@ -71,8 +74,7 @@ def getData(self):
                         "CASE WHEN round(OD_QTY,2) = 0 AND round(OD_PRICE,2) = 0 AND round(OD_AMOUNT,2) = 0 THEN '' "
                         "ELSE round(OD_AMOUNT,2) "
                         "END, "
-                        "prq_hd.OQNO "
-                        #"sum(round(OD_AMOUNT,2)), sum(round(prq_hd.OGST,2)), sum(round(OD_AMOUNT,2))+ sum(round(prq_hd.OGST,2))"
+                        "prq_hd.OQNO "                     
                        "FROM prq_det "
                         "INNER JOIN prq_hd ON prq_det.OD_UNO = prq_hd.ONUMBER "
                         "WHERE prq_hd.PR_STATUS is null")
@@ -98,7 +100,20 @@ def getData(self):
                     self.tableWidget_q.setItem(row_number, column_number, QTableWidgetItem(str(data)))
             
             if not table:
-                QMessageBox.information(self, "Done!", "No more invoice to print.")
+                tips = ["Express gratitude daily.",
+                        "Minimize your material possessions and focus on quality over quantity.",
+                        "Take your sleep seriously.",
+                        "Feed your mind daily.",
+                        "Think before you speak.",
+                        "Be on the alert to recognize your prime at whatever time of your life it may occur.",
+                        "Your road to glory will be rocky, but fulfilling.",
+                        "Don’t pursue happiness – create it.",
+                        "If you want the rainbow, you have to tolerate the rain.",
+                        "Big journeys begin with a single step.",
+                        "A person who won’t read has no advantage over a person who can’t read."
+                        ]
+                tip = random.choice(tips)
+                QMessageBox.information(self, "Nothing to print!", "Here's a tip for today:\n\n"+tip)
             else:
                 end_time = time.time()
                 execution_time = end_time - start_time
@@ -112,12 +127,11 @@ def toPDF(self):
         start_time = time.time()
         directory = "inv_pdf"
         all_data = [[x for x in g] for x, g in groupby(table, key = lambda x: x[5])]
-        
         try:
             os.makedirs(directory, exist_ok = True)
             print("Directory '%s' created successfully" % directory)
             #selecting simultaneous lists using zip()
-            for data, sumamt, ogst, ototal, odate, osale, oadd, oquo, opono,ordate,oname, osadd1, osadd2, osadd3, oscode, osphone, ospstno, olstr, olname, oladd1, oladd2, oladd3, olcode in zip(all_data, amt, gst, total, date, saleman,addedby,quote, po,datereq,name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode):
+            for ogstnum,data, sumamt, ogst, ototal, odate, osale, oadd, oquo, opono,ordate,oname, osadd1, osadd2, osadd3, oscode, osphone, ospstno, olstr, olname, oladd1, oladd2, oladd3, olcode in zip(gstnum,all_data, amt, gst, total, date, saleman,addedby,quote, po,datereq,name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode):
 
                 style2 = ParagraphStyle(
                     name='Normal',
@@ -132,15 +146,19 @@ def toPDF(self):
                     fontSize=12,
                     alignment=1,
                     spaceBefore=20,
-
                 )
+                style4 = TableStyle([
+                    ('FONTSIZE', (0, 0), (-1, -1), 12),
+                    ('FONTNAME', (0, 0), (-1, -1), 'Arial'),
+                    ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
+                    ('ALIGN',(0,0),(-1,-1), 'CENTER'),
+                 ])
 
                 addstyle = ParagraphStyle(
                     name='Normal',
                     fontName='ArialBd',
                     fontSize=10,
                     alignment=1,
-                                      
                 )
 
                 tablestyle1 = TableStyle([
@@ -148,12 +166,6 @@ def toPDF(self):
                     ('FONTNAME', (0, 0), (-1, -1), 'ArialBd'),
                     #('BOX', (0, 0), (-1, -1), 0.5, colors.black),
 
-                 ])
-                style4 = TableStyle([
-                    ('FONTSIZE', (0, 0), (-1, -1), 12),
-                    ('FONTNAME', (0, 0), (-1, -1), 'Arial'),
-                    ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
-                    ('ALIGN',(0,0),(-1,-1), 'CENTER'),
                  ])
 
                 tablestyle2 = TableStyle([
@@ -194,7 +206,6 @@ def toPDF(self):
                      heading.wrap(pdf.width, inch * 0.3)
                      heading.drawOn(canvas, pdf.leftMargin, pdf.height + inch)
 
-                     
                         # Draw subheading.                   
                      subheading = Table([['ESTIMATE']], hAlign='CENTER', style=style4)
                      subheading.wrap(pdf.width, inch * 0.2)
@@ -213,11 +224,9 @@ def toPDF(self):
                      canvas.line(6.41 * inch, 2.5 * inch, 6.41 * inch, 7.6 * inch)
                      canvas.line(7.19 * inch, 2.5 * inch, 7.19 * inch, 7.6 * inch)
 
-                     
-
                      tablelist1 = [["Date: "+str(odate),"Quote#: "+str(oquo)],
                                   ["Salesman: "+str(osale),"PO#: "+str(opono)],
-                                  ["GST#: 121989834RT","Date Req: "+str(ordate)],
+                                  ["GST#: "+str(ogstnum),"Date Req: "+str(ordate)],
                                   ["Added-by: "+str(oadd),"Page: "+"%d " % doc.page]
                                   ] 
                
@@ -234,11 +243,11 @@ def toPDF(self):
 
                      
                      footerlist = [["", "Sub-Total:", sumamt],
-                                 ["", "GST", ogst],
+                                 ["Overdue accounts will be charged 2% per month.", "GST", ogst],
+                                 ["Please enclose a copy of the invoice with the cheque."],
                                  [""],
                                  [""],
-                                 [""],
-                                 ["", "Total Amount:", round(ototal,2)]]
+                                 ["Charge to Acount", "Total Amount:", ototal]]
 
                      table1 = Table(tablelist1, colWidths=[400,200], rowHeights=[10, 10, 10, 10],
                                    hAlign='CENTER', spaceBefore=5, style=tablestyle1)
@@ -260,12 +269,13 @@ def toPDF(self):
                      footertable.drawOn(canvas, pdf.leftMargin, 1.38 * inch)
 
 
-                     
+                     addressnote = Paragraph("1706 E. HASTINGS, VAN, B.C. V5L 1S9 Phone (604)253-7707 Fax (604)253-8448",addstyle)
+                     addressnote.wrap(pdf.width, inch)
+                     addressnote.drawOn(canvas, pdf.leftMargin, 0.7 * inch)
                         
 
                 save_name = os.path.join("inv_pdf/", "q"+ str(oquo)+'.pdf')           
                 doc = BaseDocTemplate(save_name, leftMargin=0.5 * inch, rightMargin=0.5 * inch)
-                
                 
                 frame = Frame(
 
@@ -304,7 +314,6 @@ def toPDF(self):
                print('Status updated')                
             except Exception as e:
                 print(e)
-                
 
             end_time = time.time()
             execution_time = end_time - start_time
@@ -312,4 +321,3 @@ def toPDF(self):
         except Exception as e:
             print(e)
             QMessageBox.information(self, "Error", "Failed to run script.")
-        

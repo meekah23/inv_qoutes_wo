@@ -1052,7 +1052,7 @@ PDF</string>
      <property name="geometry">
       <rect>
        <x>-30</x>
-       <y>-30</y>
+       <y>-50</y>
        <width>261</width>
        <height>841</height>
       </rect>
@@ -1153,9 +1153,9 @@ orders</string>
     <widget class="QTableWidget" name="tableWidget_his">
      <property name="geometry">
       <rect>
-       <x>250</x>
+       <x>280</x>
        <y>60</y>
-       <width>761</width>
+       <width>731</width>
        <height>571</height>
       </rect>
      </property>
@@ -1176,6 +1176,9 @@ background-color: rgb(255, 255, 255);
      <property name="alternatingRowColors">
       <bool>false</bool>
      </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
@@ -1184,27 +1187,17 @@ background-color: rgb(255, 255, 255);
      </attribute>
      <column>
       <property name="text">
-       <string>Inv#</string>
+       <string>File Type</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Quote#</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>W/O#</string>
+       <string>Inv#/Quo#/WO#</string>
       </property>
      </column>
      <column>
       <property name="text">
        <string>Customer Name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Date Printed</string>
       </property>
      </column>
      <column>
