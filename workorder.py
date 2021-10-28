@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import sqlite3
 import time
-
+import random
 from itertools import groupby
 from collections import defaultdict
 from PyQt5.QtWidgets import *
@@ -20,16 +20,18 @@ from reportlab.pdfbase.ttfonts import TTFont
 def getData(self):
         try:
             start_time = time.time()
-            global table, headers,result,right,amt,gst,total,date, saleman,addedby,wonum,datereq,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode
+            global table,gstnum,right,amt,gst,total,date, saleman,addedby,wonum,datereq,quote, name, sadd1, sadd2, sadd3, scode, sphone, spstno, lstreet, lname, ladd1, ladd2, ladd3, lcode
             conn = sqlite3.connect(':memory:')
             cur = conn.cursor()
 
             # load excel file
-            df = pd.read_excel("Data1/prw_hd.xlsx", sheet_name="prw_hd")
+            df = pd.read_excel("Data/prw_hd.xlsx", sheet_name="prw_hd")
             
             df.to_sql(name='prw_hd', con=conn, if_exists='append')
-            df1 = pd.read_excel("Data1/prw_det.xlsx", sheet_name="prw_det")
+            df1 = pd.read_excel("Data/prw_det.xlsx", sheet_name="prw_det")
             df1.to_sql(name='prw_det', con=conn, if_exists='append')
+            df2 = pd.read_excel("Data/pr_sysky.xlsx", sheet_name="pr_sysky")
+            df2.to_sql(name='pr_sysky', con=conn, if_exists='append')
 
             #get headers
             cur.execute("SELECT OWDATE,OSLSMAN,ADDEDBY,OWNO,ORDATE FROM prw_hd WHERE PR_STATUS is null")
@@ -39,11 +41,14 @@ def getData(self):
             addedby = [a[2] for a in result]
             wonum = [a[3] for a in result]
             datereq = [a[4] for a in result] 
-            
+            #gst
+            cur.execute("SELECT SYSVAL FROM pr_sysky WHERE SYSKEY = 'WOLINE4'")
+            g = cur.fetchall()
+            gstnum = g[0][0]
             
             
             #get ship details
-            cur.execute("SELECT ONAME || ', ' || OFNAME,OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM prw_hd WHERE  PR_STATUS is null")
+            cur.execute("SELECT ONAME||COALESCE(OFNAME,' '),OADDR1, OADDR2,OADDR3,OPCODE,OBPHONE,OPSTNO,OSTREET,OINAME,OIADDR1,OIADDR2,OIADDR3,OIPCODE FROM prw_hd WHERE  PR_STATUS is null")
             shipping = cur.fetchall()
             name = [a[0] for a in shipping]
             sadd1 = [a[1] for a in shipping]
@@ -98,11 +103,24 @@ def getData(self):
                     self.tableWidget_wo.setItem(row_number, column_number, QTableWidgetItem(str(data)))
             
             if not table:
-                QMessageBox.information(self, "Done!", "No more invoice to print.")
+                tips = ["Express gratitude daily.",
+                        "Minimize your material possessions and focus on quality over quantity.",
+                        "Take your sleep seriously.",
+                        "Feed your mind daily.",
+                        "Think before you speak.",
+                        "Be on the alert to recognize your prime at whatever time of your life it may occur.",
+                        "Your road to glory will be rocky, but fulfilling.",
+                        "Don’t pursue happiness – create it.",
+                        "If you want the rainbow, you have to tolerate the rain.",
+                        "Big journeys begin with a single step.",
+                        "A person who won’t read has no advantage over a person who can’t read."
+                        ]
+                tip = random.choice(tips)
+                QMessageBox.information(self, "Nothing to print!", "Here's a tip for today:\n\n"+tip)
             else:
                 end_time = time.time()
                 execution_time = end_time - start_time
-                self.time_label.setText("Data1 fetched for " + str(execution_time) + " secs")
+                self.time_label.setText("Data fetched for " + str(execution_time) + " secs")
 
         except Exception as e:
                 print(e)
@@ -214,7 +232,7 @@ def toPDF(self):
 
                      tablelist1 = [["Date: "+str(odate),"W/O#: "+str(owonum)],
                                   ["Salesman: "+str(osale), "Date Req: "+str(ordate)],
-                                  ["GST#: 121989834RT"],
+                                  ["GST#: "+str(gstnum)],
                                   ["Added-by: "+str(oadd),"Page: "+"%d " % doc.page]
                                   ] 
                
@@ -230,12 +248,12 @@ def toPDF(self):
                      headerlist = [["Code", "Qty", "Description", "Unit Price", "Amount"]]
 
                      
-                     footerlist = [["", "Sub-Total:", sumamt],
-                                 ["", "GST", ogst],
+                     footerlist = [["", "Sub-Total:", round(sumamt,2)],
+                                 ["Overdue accounts will be charged 2% per month.", "GST", round(ogst,2)],
+                                 ["Please enclose a copy of the invoice with the cheque."],
                                  [""],
                                  [""],
-                                 [""],
-                                 ["", "Total Amount:", round(ototal,2)]]
+                                 ["Charge to Acount", "Total Amount:", round(ototal,2)]]
 
                      table1 = Table(tablelist1, colWidths=[400,200], rowHeights=[10, 10, 10, 10],
                                    hAlign='CENTER', spaceBefore=5, style=tablestyle1)
@@ -295,9 +313,9 @@ def toPDF(self):
                 doc.build(Elements)
               
             try:               
-               df = pd.read_excel("Data1/prw_hd.xlsx", sheet_name="prw_hd")               
+               df = pd.read_excel("Data/prw_hd.xlsx", sheet_name="prw_hd")               
                df.loc[(df.PR_STATUS.isnull()), 'PR_STATUS'] = 'P'
-               df.to_excel('Data1/prw_hd.xlsx',sheet_name = 'prw_hd', index=False)
+               df.to_excel('Data/prw_hd.xlsx',sheet_name = 'prw_hd', index=False)
                print('Status updated')                
             except Exception as e:
                 print(e)
